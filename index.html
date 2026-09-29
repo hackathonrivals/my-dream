@@ -2108,7 +2108,7 @@
     </nav>
     <div class="nav-cta">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
-      <button class="btn btn-ghost" id="loginBtn">Log in</button>
+      <button class="btn btn-ghost" id="loginBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden';">Log in</button>
       <a href="#register" class="btn btn-primary">Register Now</a>
       <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
@@ -2342,8 +2342,8 @@
         <h3>Login required to enter the Arena</h3>
         <p>Only registered members can upload problem statements, submit solutions, and receive scores. Sign in or create a free account to continue.</p>
         <div class="lock-actions">
-          <button class="btn btn-primary btn-lg" id="arenaLoginBtn">🔐 Log in</button>
-          <button class="btn btn-ghost btn-lg" id="arenaSignupBtn">Create account →</button>
+          <button class="btn btn-primary btn-lg" id="arenaLoginBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden';">🔐 Log in</button>
+          <button class="btn btn-ghost btn-lg" id="arenaSignupBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden'; document.querySelector('.auth-tab[data-mode=signup]')?.click();">Create account →</button>
         </div>
       </div>
 
@@ -2460,8 +2460,8 @@
         <h3>Login required to register</h3>
         <p>To register your team for Hackathon Rivals Season 2026, please log in or create an account first. This ensures secure verification and prevents duplicate registrations.</p>
         <div class="lock-actions">
-          <button class="btn btn-primary btn-lg" id="lockLoginBtn">🔐 Log in</button>
-          <button class="btn btn-ghost btn-lg" id="lockSignupBtn">Create account →</button>
+          <button class="btn btn-primary btn-lg" id="lockLoginBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden';">🔐 Log in</button>
+          <button class="btn btn-ghost btn-lg" id="lockSignupBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden'; document.querySelector('.auth-tab[data-mode=signup]')?.click();">Create account →</button>
         </div>
         <div class="lock-note">New to Hackathon Rivals? <a id="lockSignupLink">Sign up free →</a></div>
       </div>
@@ -3780,6 +3780,7 @@
 (function()
 {
   'use strict';
+  console.log('HRivals script started');
   const $  = s => document.querySelector(s);
   const $$ = s => document.querySelectorAll(s);
 
@@ -5025,6 +5026,7 @@ async function getAIResponse(msg){
   }
 
   function openLogin(){
+    console.log('openLogin called');
     loginModal.classList.add('open');
     document.body.style.overflow = 'hidden';
     setTimeout(() => loginEmail.focus(), 200);
@@ -5041,6 +5043,12 @@ async function getAIResponse(msg){
     });
   }
 
+  // Fallback: direct element click handler (works even if variable issues)
+  const loginBtnEl = document.getElementById('loginBtn');
+  if (loginBtnEl) {
+    loginBtnEl.addEventListener('click', openLogin);
+  }
+  
   loginBtn.addEventListener('click', openLogin);
   loginClose.addEventListener('click', closeLogin);
   loginModal.addEventListener('click', (e) => { if (e.target === loginModal) closeLogin(); });
@@ -5141,6 +5149,7 @@ async function getAIResponse(msg){
   const lockSignupBtn = document.getElementById('lockSignupBtn');
   const lockSignupLink = document.getElementById('lockSignupLink');
   if (lockLoginBtn) lockLoginBtn.addEventListener('click', () => {
+    console.log('lockLoginBtn clicked');
     authMode = 'login';
     authToggle.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === 'login'));
     updateFormFields(); openLogin();
