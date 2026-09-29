@@ -2107,7 +2107,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="nav-cta">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" onclick="console.log('Theme toggle clicked');const cur=document.documentElement.getAttribute('data-theme');const next=cur==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',next);this.textContent=next==='dark'?'🌙':'☀️';localStorage.setItem('hr-theme',next);showToast(next==='dark'?'Dark mode on':'Light mode on','info','🌓');">🌙</button>
       <button class="btn btn-ghost" id="loginBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden';">Log in</button>
       <a href="#register" class="btn btn-primary">Register Now</a>
       <button class="burger" id="burger" aria-label="Menu" onclick="document.getElementById('navLinks')?.classList.toggle('open')"><span></span><span></span><span></span></button>
@@ -3380,15 +3380,15 @@
 
     <div class="login-body">
       <div class="auth-toggle" id="authToggle">
-        <button class="auth-tab active" data-mode="login">Log in</button>
-        <button class="auth-tab" data-mode="signup">Sign up</button>
+        <button class="auth-tab active" data-mode="login" onclick="authMode='login';document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode==='login'));updateFormFields();">Log in</button>
+        <button class="auth-tab" data-mode="signup" onclick="authMode='signup';document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode==='signup'));updateFormFields();">Sign up</button>
       </div>
 
       <div class="role-picker" id="rolePicker">
-        <button class="role-btn active" data-role="Student"><span class="ri">🎓</span>Student</button>
-        <button class="role-btn" data-role="SPOC"><span class="ri">🏫</span>SPOC</button>
-        <button class="role-btn" data-role="Judge"><span class="ri">⚖️</span>Judge</button>
-        <button class="role-btn" data-role="Admin"><span class="ri">🛡️</span>Admin</button>
+        <button class="role-btn active" data-role="Student" onclick="selectedRole='Student';document.querySelectorAll('.role-btn').forEach(b=>b.classList.toggle('active',b.dataset.role==='Student'));updateFormFields();"><span class="ri">🎓</span>Student</button>
+        <button class="role-btn" data-role="SPOC" onclick="selectedRole='SPOC';document.querySelectorAll('.role-btn').forEach(b=>b.classList.toggle('active',b.dataset.role==='SPOC'));updateFormFields();"><span class="ri">🏫</span>SPOC</button>
+        <button class="role-btn" data-role="Judge" onclick="selectedRole='Judge';document.querySelectorAll('.role-btn').forEach(b=>b.classList.toggle('active',b.dataset.role==='Judge'));updateFormFields();"><span class="ri">⚖️</span>Judge</button>
+        <button class="role-btn" data-role="Admin" onclick="selectedRole='Admin';document.querySelectorAll('.role-btn').forEach(b=>b.classList.toggle('active',b.dataset.role==='Admin'));updateFormFields();"><span class="ri">🛡️</span>Admin</button>
       </div>
 
       <div class="login-error" id="loginError">
@@ -3413,7 +3413,7 @@
         <label>Password</label>
         <div class="input-wrap">
           <input type="password" id="loginPassword" placeholder="••••••••" />
-          <button class="pw-toggle" id="pwToggle" aria-label="Toggle password">👁️</button>
+          <button class="pw-toggle" id="pwToggle" aria-label="Toggle password" onclick="const inp=document.getElementById('loginPassword');if(inp.type==='password'){inp.type='text';this.textContent='🙈'}else{inp.type='password';this.textContent='👁️'}">👁️</button>
         </div>
       </div>
 
@@ -3457,7 +3457,7 @@
         <label class="remember">
           <input type="checkbox" id="loginRemember" /> Remember me
         </label>
-        <a href="#" class="forgot" id="forgotLink">Forgot password?</a>
+        <a href="#" class="forgot" id="forgotLink" onclick="const email=document.getElementById('loginEmail').value.trim();if(!email){showToast('Enter your email first', 'warn', '📧');document.getElementById('loginEmail').focus();return false;}supabase.auth.resetPasswordForEmail(email).then(({error})=>{if(error){showToast(error.message,'warn','⚠️');return;}showToast('Password reset link sent to your email','success','📧');});return false;">Forgot password?</a>
       </div>
 
       <label class="checkbox-row signup-only" style="display:none" id="fieldTerms">
@@ -3465,19 +3465,19 @@
         <span style="font-size:13px;color:var(--muted)">I agree to the <a href="#" style="color:var(--violet);text-decoration:underline">Terms &amp; Conditions</a> and <a href="#" style="color:var(--violet);text-decoration:underline">Privacy Policy</a>.</span>
       </label>
 
-      <button class="login-submit" id="loginSubmit" style="margin-top:16px">Log in →</button>
+      <button class="login-submit" id="loginSubmit" style="margin-top:16px" onclick="const email=document.getElementById('loginEmail').value.trim();const pw=document.getElementById('loginPassword').value.trim();const isSignup=authMode==='signup';if(!email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){document.getElementById('loginErrorText').textContent='Please enter a valid email address';document.getElementById('loginError').classList.add('show');document.getElementById('loginEmail').focus();return;}if(!pw||pw.length<6){document.getElementById('loginErrorText').textContent='Password must be at least 6 characters';document.getElementById('loginError').classList.add('show');document.getElementById('loginPassword').focus();return;}if(isSignup){const name=document.getElementById('signupName')?.value.trim();if(!name){document.getElementById('loginErrorText').textContent='Please enter your full name';document.getElementById('loginError').classList.add('show');document.getElementById('signupName')?.focus();return;}if((selectedRole==='Student'||selectedRole==='SPOC')&&!document.getElementById('signupCollege')?.value.trim()){document.getElementById('loginErrorText').textContent='Please enter your college name';document.getElementById('loginError').classList.add('show');document.getElementById('signupCollege')?.focus();return;}if(selectedRole==='SPOC'&&!document.getElementById('signupDesignation')?.value.trim()){document.getElementById('loginErrorText').textContent='Please enter your designation';document.getElementById('loginError').classList.add('show');document.getElementById('signupDesignation')?.focus();return;}if(selectedRole==='Judge'){if(!document.getElementById('signupInvite')?.value.trim()){document.getElementById('loginErrorText').textContent='Judge invite code is required';document.getElementById('loginError').classList.add('show');document.getElementById('signupInvite')?.focus();return;}fetch('/api/verify-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('signupInvite').value.trim(),role:'Judge'})}).then(r=>r.json()).then(d=>{if(!d.ok){document.getElementById('loginErrorText').textContent='Invalid judge invite code';document.getElementById('loginError').classList.add('show');document.getElementById('signupInvite')?.focus();return;}submitAuth();}).catch(()=>submitAuth());return;}if(selectedRole==='Admin'){if(!document.getElementById('signupInvite')?.value.trim()){document.getElementById('loginErrorText').textContent='Admin invite code is required';document.getElementById('loginError').classList.add('show');document.getElementById('signupInvite')?.focus();return;}fetch('/api/verify-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:document.getElementById('signupInvite').value.trim(),role:'Admin'})}).then(r=>r.json()).then(d=>{if(!d.ok){document.getElementById('loginErrorText').textContent='Invalid admin invite code';document.getElementById('loginError').classList.add('show');document.getElementById('signupInvite')?.focus();return;}submitAuth();}).catch(()=>submitAuth());return;}if(!document.getElementById('signupTerms')?.checked){document.getElementById('loginErrorText').textContent='Please accept the Terms & Conditions';document.getElementById('loginError').classList.add('show');return;}}document.getElementById('loginError').classList.remove('show');submitAuth();">Log in →</button>
 
       <div class="divider">OR CONTINUE WITH</div>
 
       <div class="social-login">
-        <button class="social-login-btn" data-provider="Google" title="Google">🔍</button>
-        <button class="social-login-btn" data-provider="GitHub" title="GitHub">🐙</button>
-        <button class="social-login-btn" data-provider="LinkedIn" title="LinkedIn">in</button>
+        <button class="social-login-btn" data-provider="Google" title="Google" onclick="supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}}).then(({error})=>{if(error)showToast(error.message,'warn','⚠️');})">🔍</button>
+        <button class="social-login-btn" data-provider="GitHub" title="GitHub" onclick="supabase.auth.signInWithOAuth({provider:'github',options:{redirectTo:window.location.href}}).then(({error})=>{if(error)showToast(error.message,'warn','⚠️');})">🐙</button>
+        <button class="social-login-btn" data-provider="LinkedIn" title="LinkedIn" onclick="showToast('LinkedIn signup coming soon!','info','🔐')">in</button>
       </div>
 
       <div class="login-foot">
         <span id="authSwitchText">Don't have an account?</span>
-        <a id="authSwitchLink">Create one →</a>
+        <a id="authSwitchLink" onclick="authMode = authMode === 'login' ? 'signup' : 'login'; document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===authMode)); updateFormFields();">Create one →</a>
       </div>
     </div>
   </div>
@@ -3830,14 +3830,7 @@
   const savedTheme = localStorage.getItem('hr-theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-  themeToggle.addEventListener('click', () => {
-    const cur = document.documentElement.getAttribute('data-theme');
-    const next = cur === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
-    localStorage.setItem('hr-theme', next);
-    showToast(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info', '🌓');
-  });
+  // Inline onclick handler handles theme toggle - no addEventListener needed
 
   /* ============ TOASTS ============ */
   const toastWrap = $('#toastWrap');
@@ -5075,6 +5068,91 @@ async function getAIResponse(msg){
     if (e.key === 'Escape' && loginModal.classList.contains('open')) closeLogin();
   });
 
+  // Submit auth function (callable from inline onclick)
+  function submitAuth(){
+    const email = loginEmail.value.trim();
+    const pw = loginPassword.value.trim();
+    const isSignup = authMode === 'signup';
+    
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      loginErrorText.textContent = 'Please enter a valid email address';
+      loginError.classList.add('show'); loginEmail.focus(); return;
+    }
+    if (!pw || pw.length < 6){
+      loginErrorText.textContent = 'Password must be at least 6 characters';
+      loginError.classList.add('show'); loginPassword.focus(); return;
+    }
+
+    if (isSignup){
+      const name = signupInputs.name?.value.trim();
+      if (!name){ loginErrorText.textContent = 'Please enter your full name';
+        loginError.classList.add('show'); signupInputs.name.focus(); return; }
+      if ((selectedRole === 'Student' || selectedRole === 'SPOC') && !signupInputs.college?.value.trim()){
+        loginErrorText.textContent = 'Please enter your college name';
+        loginError.classList.add('show'); signupInputs.college.focus(); return; }
+      if (selectedRole === 'SPOC' && !signupInputs.designation?.value.trim()){
+        loginErrorText.textContent = 'Please enter your designation';
+        loginError.classList.add('show'); signupInputs.designation.focus(); return; }
+      if (selectedRole === 'Judge'){
+        if (!signupInputs.invite?.value.trim()){
+          loginErrorText.textContent = 'Judge invite code is required';
+          loginError.classList.add('show'); signupInputs.invite.focus(); return;
+        }
+        fetch('/api/verify-invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: signupInputs.invite.value.trim(), role: 'Judge' }) })
+          .then(r=>r.json()).then(d=>{ if(!d.ok){ loginErrorText.textContent='Invalid judge invite code'; loginError.classList.add('show'); signupInputs.invite.focus(); return; } submitAuth(); })
+          .catch(()=>submitAuth());
+        return;
+      }
+      if (selectedRole === 'Admin'){
+        if (!signupInputs.invite?.value.trim()){
+          loginErrorText.textContent = 'Admin invite code is required';
+          loginError.classList.add('show'); signupInputs.invite.focus(); return;
+        }
+        fetch('/api/verify-invite', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: signupInputs.invite.value.trim(), role: 'Admin' }) })
+          .then(r=>r.json()).then(d=>{ if(!d.ok){ loginErrorText.textContent='Invalid admin invite code'; loginError.classList.add('show'); signupInputs.invite.focus(); return; } submitAuth(); })
+          .catch(()=>submitAuth());
+        return;
+      }
+      if (!signupInputs.terms?.checked){
+        loginErrorText.textContent = 'Please accept the Terms & Conditions';
+        loginError.classList.add('show'); return;
+      }
+    }
+
+    loginError.classList.remove('show');
+    loginSubmit.textContent = isSignup ? 'Creating account...' : 'Logging in...';
+    loginSubmit.disabled = true;
+
+    try {
+      if (isSignup){
+        supabase.auth.signUp({ email, password: pw, options: { data: { full_name: signupInputs.name?.value.trim() || '', role: selectedRole, college: signupInputs.college?.value.trim() || '' }}}).then(({error})=>{
+          if(error) throw error;
+          showToast(`${selectedRole} account created!`, 'success', '✓');
+          loginSubmit.textContent = 'Account created ✓';
+          loginSubmit.style.background = 'linear-gradient(135deg,#3ddc84,#22d3ee)';
+          fetch(FORMSPREE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ _subject: `${selectedRole} Signup`, type: 'SIGNUP', role: selectedRole, email, timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) }) }).catch(()=>{});
+          setTimeout(async()=>{ closeLogin(); loginSubmit.textContent='Create account →'; loginSubmit.style.background=''; loginSubmit.disabled=false; await updateAuthUI(); }, 1200);
+        });
+      } else {
+        supabase.auth.signInWithPassword({ email, password: pw }).then(({error})=>{
+          if(error) throw error;
+          showToast(`Welcome back!`, 'success', '✓');
+          loginSubmit.textContent = 'Logged in ✓';
+          loginSubmit.style.background = 'linear-gradient(135deg,#3ddc84,#22d3ee)';
+          fetch(FORMSPREE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify({ _subject: `${selectedRole} Login`, type: 'LOGIN', role: selectedRole, email, timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) }) }).catch(()=>{});
+          setTimeout(async()=>{ closeLogin(); loginSubmit.textContent='Log in →'; loginSubmit.style.background=''; loginSubmit.disabled=false; await updateAuthUI(); }, 1200);
+        });
+      }
+    } catch(err){
+      console.error('Auth error:', err);
+      loginErrorText.textContent = err.message || 'Something went wrong';
+      loginError.classList.add('show');
+      loginSubmit.textContent = isSignup ? 'Create account →' : 'Log in →';
+      loginSubmit.style.background = '';
+      loginSubmit.disabled = false;
+    }
+  }
+
   function updateFormFields(){
     const isSignup = authMode === 'signup';
     Object.values(signupFields).forEach(el => {
@@ -5118,15 +5196,7 @@ async function getAIResponse(msg){
     }
   }
 
-  authToggle.querySelectorAll('.auth-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      authToggle.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      authMode = tab.dataset.mode;
-      loginError.classList.remove('show');
-      updateFormFields();
-    });
-  });
+  // Inline onclick handles auth tab switching
 
   authSwitchLink.addEventListener('click', () => {
     authMode = authMode === 'login' ? 'signup' : 'login';
@@ -5135,25 +5205,12 @@ async function getAIResponse(msg){
     });
     loginError.classList.remove('show');
     updateFormFields();
-  });
+});
 
-  rolePicker.querySelectorAll('.role-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      rolePicker.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedRole = btn.dataset.role;
-      loginError.classList.remove('show');
-      updateFormFields();
-    });
-  });
+// Inline onclick handles role picker
+// Inline onclick handles pw toggle
 
-  pwToggle.addEventListener('click', () => {
-    const isPw = loginPassword.type === 'password';
-    loginPassword.type = isPw ? 'text' : 'password';
-    pwToggle.textContent = isPw ? '🙈' : '👁️';
-  });
-
-  document.addEventListener('click', async (e) => {
+document.addEventListener('click', async (e) => {
     const link = e.target.closest('a[href="#register"]');
     if (!link) return;
     const user = await getCurrentUser();
