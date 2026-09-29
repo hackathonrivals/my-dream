@@ -2110,7 +2110,7 @@
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
       <button class="btn btn-ghost" id="loginBtn" onclick="document.getElementById('loginModal')?.classList.add('open'); document.body.style.overflow='hidden';">Log in</button>
       <a href="#register" class="btn btn-primary">Register Now</a>
-      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <button class="burger" id="burger" aria-label="Menu" onclick="document.getElementById('navLinks')?.classList.toggle('open')"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
@@ -2292,8 +2292,8 @@
             <div class="pg-panel-head">
               <span class="pg-filename">main.<span id="pgExt">html</span></span>
               <div class="pg-panel-actions">
-                <button class="pg-icon-btn" id="pgReset" title="Reset to sample">↺</button>
-                <button class="pg-icon-btn" id="pgCopy" title="Copy code">📋</button>
+                <button class="pg-icon-btn" id="pgReset" title="Reset to sample" onclick="loadLang(pgCurrentLang); showToast('Code reset to sample', 'info', '↺');">↺</button>
+                <button class="pg-icon-btn" id="pgCopy" title="Copy code" onclick="navigator.clipboard.writeText(pgCode.value).then(()=>showToast('Code copied!', 'success', '📋')).catch(()=>showToast('Copy failed', 'warn', '⚠️'));">📋</button>
               </div>
             </div>
             <textarea class="pg-editor" id="pgCode" spellcheck="false"></textarea>
@@ -2322,7 +2322,7 @@
           <div class="pg-info">⚡ Powered by <strong>Judge0 CE</strong> · Live HTML/React preview · <strong>39</strong> languages</div>
           <div class="pg-buttons">
             <span class="pg-shortcut">Ctrl + Enter</span>
-            <button class="btn btn-primary pg-run" id="pgRun">▶ Preview</button>
+            <button class="btn btn-primary pg-run" id="pgRun" onclick="runCode()">▶ Preview</button>
           </div>
         </div>
       </div>
@@ -2373,7 +2373,7 @@
             <span class="badge">optional · max 5</span>
           </div>
           <div class="tc-list" id="tcList"></div>
-          <button class="btn btn-ghost" id="addTc" type="button">+ Add test case</button>
+          <button class="btn btn-ghost" id="addTc" type="button" onclick="if(arenaTestCases.length>=5){showToast('Maximum 5 test cases', 'warn', '⚠️');}else{arenaTestCases.push({input:'',output:''});renderTC();}">+ Add test case</button>
           <div class="arena-hint" style="margin-top:12px">
             💡 If you provide input &amp; expected output, correctness is auto-scored. Without test cases we fall back to a heuristic run-based score.
           </div>
@@ -2386,7 +2386,7 @@
           </div>
           <div class="arena-toolbar">
             <select class="arena-lang-select" id="arenaLang"></select>
-            <button class="btn btn-ghost" id="arenaClear" type="button">↺ Clear</button>
+            <button class="btn btn-ghost" id="arenaClear" type="button" onclick="if(confirm('Clear your current solution?')){arenaCode.value='';updateArenaLines();arenaResWrap.innerHTML='';arenaFb.style.display='none';arenaHintCount=0;if(hintCountEl)hintCountEl.textContent='0 / 3 revealed';if(hintInner){hintInner.querySelectorAll('.hint-item').forEach(el=>el.remove());if(!hintInner.querySelector('.hint-empty')){const el=document.createElement('div');el.className='hint-empty';el.textContent=\"Reveal hints one by one. They don't affect your score — we just log them for reference.\";hintInner.insertBefore(el,hintActions);}if(revealHintBtn){revealHintBtn.disabled=false;revealHintBtn.textContent='🔓 Reveal hint 1';}}if(arenaHintsEl)arenaHintsEl.classList.remove('expanded');if(hintTopic)hintTopic.classList.remove('show');showToast('Editor cleared', 'info', '↺');}">↺ Clear</button>
             <span class="arena-hint" id="arenaLines">0 lines</span>
           </div>
           <textarea class="arena-editor" id="arenaCode" spellcheck="false"></textarea>
@@ -2441,7 +2441,7 @@
 
           <div class="fb-actions">
             <span class="arena-hint" id="fbNote">Anonymous feedback is fine.</span>
-            <button class="btn btn-primary" id="fbSubmit" type="button">Send Feedback →</button>
+            <button class="btn btn-primary" id="fbSubmit" type="button" onclick="if(fbRating===0 && !fbText.value.trim() && fbTags.size===0){showToast('Add a rating or comment first', 'warn', '⚠️');return;}const user=await getCurrentUser();fbSubmit.disabled=true;fbSubmit.textContent='Sending…';fetch(FORMSPREE_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'Code Arena Feedback',type:'ARENA_FEEDBACK',rating:fbRating,tags:[...fbTags].join(', '),comment:fbText.value.trim(),email:user?user.email:'anonymous',role:user?user.role:'',timestamp:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})})}).catch(()=>{});setTimeout(()=>{showToast('Thanks for the feedback! 🙏', 'success', '💬');fbRating=0;fbTags.clear();fbStars.querySelectorAll('.fb-star').forEach(s=>s.classList.remove('active'));fbChips.querySelectorAll('.fb-chip').forEach(c=>c.classList.remove('active'));fbText.value='';fbSubmit.disabled=false;fbSubmit.textContent='Send Feedback →';},900);">Send Feedback →</button>
           </div>
         </div>
 
@@ -2550,7 +2550,7 @@
     <h3 class="pane-title">Team Members</h3>
     <p class="pane-desc">Add 1–6 members. The Team Leader is added by default.</p>
     <div class="members" id="membersList"></div>
-    <button class="add-member" id="addMember">+ Add another member</button>
+    <button class="add-member" id="addMember" onclick="addMember()">+ Add another member</button>
     <div class="hint info"><span>ℹ️</span><div>You can register as a solo hacker (1 member) or with a full team of up to 6 members.</div></div>
   </div>
 
@@ -2589,9 +2589,9 @@
   </div>
 </div>
         <div class="reg-actions">
-          <button class="btn btn-ghost" id="prevBtn" disabled>← Back</button>
+          <button class="btn btn-ghost" id="prevBtn" disabled onclick="setStep(currentStep - 1)">← Back</button>
           <div class="reg-progress">Step <b id="curStep">1</b> of <b>4</b></div>
-          <button class="btn btn-primary" id="nextBtn">Next →</button>
+          <button class="btn btn-primary" id="nextBtn" onclick="if(currentStep===4){submitTeamRegistration();}else{setStep(currentStep + 1);}">Next →</button>
         </div>
       </div>
     </div>
@@ -2695,7 +2695,7 @@
           </label>
 
           <div class="submit-row">
-            <button class="btn btn-primary btn-lg" id="qSubmit">Send Message →</button>
+            <button class="btn btn-primary btn-lg" id="qSubmit" onclick="const name=$('#qName').value.trim();const email=$('#qEmail').value.trim();const subject=$('#qSubject').value.trim();const message=$('#qMessage').value.trim();if(!name||name.length<2){showToast('Please enter your full name', 'warn', '⚠️');$('#qName').focus();return;}if(!email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){showToast('Please enter a valid email', 'warn', '⚠️');$('#qEmail').focus();return;}if(!subject){showToast('Please enter a subject', 'warn', '⚠️');$('#qSubject').focus();return;}if(!message||message.length<20){showToast('Message must be at least 20 characters', 'warn', '⚠️');$('#qMessage').focus();return;}const btn=$('#qSubmit');const orig=btn.textContent;btn.textContent='Sending...';btn.disabled=true;supabase.from('contact_messages').insert([{name,email,phone:$('#qPhone').value.trim()||null,org:$('#qOrg').value.trim()||null,category:selectedCat||'General',subject,message}]).then(({error})=>{if(error)console.warn('Contact save failed:',error);});fetch(FORMSPREE_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({name,email,phone:$('#qPhone').value.trim(),org:$('#qOrg').value.trim(),category:selectedCat,subject,message})}).catch(()=>{});setTimeout(()=>{btn.textContent='Message Sent ✓';btn.style.background='linear-gradient(135deg,#3ddc84,#22d3ee)';showToast(`Query submitted! We'll reply to ${email} within 24 hours.`, 'success', '✓');['qName','qEmail','qPhone','qOrg','qSubject','qMessage'].forEach(id=>$('#'+id).value='');setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false;},2500);},900);">Send Message →</button>
             <span class="submit-note">We typically reply within 24 hours.</span>
           </div>
         </div>
@@ -3365,7 +3365,7 @@
   </div>
 </footer>
 
-<button class="back-top" id="backTop" aria-label="Back to top">↑</button>
+<button class="back-top" id="backTop" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <!-- LOGIN MODAL -->
 <div class="login-modal-bg" id="loginModal">
@@ -3375,7 +3375,7 @@
         <h3 id="loginTitle">Welcome back</h3>
         <div class="sub" id="loginSub">Log in to continue to your dashboard</div>
       </div>
-      <button class="login-close" id="loginClose" aria-label="Close">✕</button>
+      <button class="login-close" id="loginClose" aria-label="Close" onclick="document.getElementById('loginModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
 
     <div class="login-body">
@@ -3488,7 +3488,7 @@
   <div class="modal" role="dialog" aria-modal="true">
     <div class="modal-head">
       <div><div class="id" id="mId">PS-2026-001</div><h3 id="mTitle">AI-powered crop disease detection</h3></div>
-      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <button class="modal-close" id="modalClose" aria-label="Close" onclick="document.getElementById('psModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-tags" id="mTags"></div>
@@ -3522,7 +3522,7 @@
         <div class="cm-title" id="cmTitle">—</div>
         <div class="meta" id="cmMeta">—</div>
       </div>
-      <button class="cm-close" id="cmClose" aria-label="Close">✕</button>
+      <button class="cm-close" id="cmClose" aria-label="Close" onclick="document.getElementById('codeModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="cm-body">
       <h4>Question</h4>
@@ -3546,7 +3546,7 @@
         <div class="who">🏆 Full Leaderboard</div>
         <div class="sub" id="lbSub">Rankings based on Code Arena submissions</div>
       </div>
-      <button class="um-close" id="lbClose" aria-label="Close">✕</button>
+      <button class="um-close" id="lbClose" aria-label="Close" onclick="document.getElementById('lbModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="um-body" style="padding-top:0">
       <div class="tabs" style="margin-bottom:16px;position:sticky;top:0;background:var(--surface-2);z-index:5;padding:12px 0">
@@ -3566,7 +3566,7 @@
         <div class="who" id="dbWelcome">Welcome back!</div>
         <div class="sub" id="dbSub">Loading your dashboard…</div>
       </div>
-      <button class="um-close" id="dbClose" aria-label="Close">✕</button>
+      <button class="um-close" id="dbClose" aria-label="Close" onclick="document.getElementById('dashboardModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="um-body" id="dbBody">
       <div class="ana-empty">Loading dashboard…</div>
@@ -3581,7 +3581,7 @@
         <div class="who" id="myRegTitle">My Registration</div>
         <div class="sub" id="myRegSub">Loading…</div>
       </div>
-      <button class="um-close" id="myRegClose" aria-label="Close">✕</button>
+      <button class="um-close" id="myRegClose" aria-label="Close" onclick="document.getElementById('myRegModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="um-body" id="myRegBody">
       <div class="ana-empty">Loading your registration…</div>
@@ -3596,7 +3596,7 @@
         <div class="who" id="umWho">—</div>
         <div class="sub" id="umSub">—</div>
       </div>
-      <button class="um-close" id="umClose" aria-label="Close">✕</button>
+      <button class="um-close" id="umClose" aria-label="Close" onclick="document.getElementById('userModal')?.classList.remove('open'); document.body.style.overflow='';">✕</button>
     </div>
     <div class="um-body">
       <div class="um-stats">
@@ -3616,7 +3616,7 @@
         <h3 id="tmModalTitle">Add Testimonial</h3>
         <div class="sub">Fill in the details below</div>
       </div>
-      <button class="im-close" id="tmModalClose" type="button">✕</button>
+      <button class="im-close" id="tmModalClose" type="button" onclick="document.getElementById('tmModal')?.classList.remove('open');">✕</button>
     </div>
     <div class="im-body">
       <div class="field" style="margin-bottom:14px">
@@ -3676,7 +3676,7 @@
         <h3 id="msgModalTitle">Message</h3>
         <div class="sub" id="msgModalSub">—</div>
       </div>
-      <button class="im-close" id="msgModalClose" type="button">✕</button>
+      <button class="im-close" id="msgModalClose" type="button" onclick="document.getElementById('msgModal')?.classList.remove('open');">✕</button>
     </div>
     <div class="im-body" id="msgModalBody"></div>
     <div class="im-actions">
@@ -3699,7 +3699,7 @@
         <h3>📥 Import submissions</h3>
         <div class="sub">Bulk upload CSV · up to 500 rows per batch</div>
       </div>
-      <button class="im-close" id="imClose" aria-label="Close">✕</button>
+      <button class="im-close" id="imClose" aria-label="Close" onclick="document.getElementById('importModal')?.classList.remove('open');">✕</button>
     </div>
     <div class="im-body">
       <div class="im-drop" id="imDrop">
@@ -3743,7 +3743,7 @@
   </div>
 </div>
 
-<button class="ai-fab" id="aiFab" aria-label="Open AI Mentor">🤖</button>
+<button class="ai-fab" id="aiFab" aria-label="Open AI Mentor" onclick="document.getElementById('aiPanel')?.classList.add('open'); document.getElementById('aiFab')?.classList.add('hidden'); setTimeout(()=>document.getElementById('aiInput')?.focus(),200);">🤖</button>
 
 <div class="ai-panel" id="aiPanel">
   <div class="ai-head">
@@ -3751,7 +3751,7 @@
       <div class="ai-avatar">🤖</div>
       <div><div class="name">Rival AI Mentor</div><div class="status">Online · avg reply 2s</div></div>
     </div>
-    <button class="ai-close" id="aiClose" aria-label="Close">✕</button>
+    <button class="ai-close" id="aiClose" aria-label="Close" onclick="document.getElementById('aiPanel')?.classList.remove('open'); document.getElementById('aiFab')?.classList.remove('hidden');">✕</button>
   </div>
   <div class="ai-messages" id="aiMessages">
     <div class="ai-msg">
@@ -3781,6 +3781,19 @@
 {
   'use strict';
   console.log('HRivals script started');
+  // Global error handler
+  window.addEventListener('error', e => {
+    console.error('Global error:', e.error || e.message);
+    if (typeof showToast === 'function') {
+      showToast('Error: ' + (e.error?.message || e.message), 'warn', '⚠️');
+    }
+  });
+  window.addEventListener('unhandledrejection', e => {
+    console.error('Unhandled rejection:', e.reason);
+    if (typeof showToast === 'function') {
+      showToast('Async error: ' + (e.reason?.message || e.reason), 'warn', '⚠️');
+    }
+  });
   const $  = s => document.querySelector(s);
   const $$ = s => document.querySelectorAll(s);
 
@@ -3995,14 +4008,15 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
   $('#applyBtn').addEventListener('click', () => { closeModal(); document.querySelector('#register').scrollIntoView({behavior:'smooth'}); });
 
-  $$('[data-filter]').forEach(tab => {
-    tab.addEventListener('click', () => {
-      $$('[data-filter]').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      currentFilter = tab.dataset.filter;
-      renderPS();
-    });
-  });
+  // Problem statement filters - event delegation
+document.addEventListener('click', e => {
+  const tab = e.target.closest('[data-filter]');
+  if (!tab) return;
+  $$('[data-filter]').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentFilter = tab.dataset.filter;
+  renderPS();
+});
 
   /* ============ LEADERBOARD — REAL DATA ============ */
 const rowsEl = $('#boardRows');
@@ -4068,12 +4082,13 @@ async function loadLeaderboard(period = 'live'){
   }
 }
 
-$$('[data-board]').forEach(tab => {
-  tab.addEventListener('click', () => {
-    $$('[data-board]').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    loadLeaderboard(tab.dataset.board);
-  });
+// Leaderboard tabs - event delegation
+document.addEventListener('click', e => {
+  const tab = e.target.closest('[data-board]');
+  if (!tab) return;
+  $$('[data-board]').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  loadLeaderboard(tab.dataset.board);
 });
 
 loadLeaderboard('live');
@@ -4714,17 +4729,21 @@ loadHeroMockup();
  
   /* ============ FAQ ============ */
   $$('.faq-item').forEach(item => {
-    item.querySelector('.faq-q').addEventListener('click', () => item.classList.toggle('open'));
-  });
+    // FAQ items - event delegation
+document.addEventListener('click', e => {
+  const q = e.target.closest('.faq-q');
+  if (q) q.closest('.faq-item').classList.toggle('open');
+});
 
   /* ============ CONTACT ============ */
   let selectedCat = 'General';
-  $$('#catPills .cat-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      $$('#catPills .cat-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      selectedCat = pill.dataset.cat;
-    });
+  // Contact category pills - event delegation
+  document.addEventListener('click', e => {
+    const pill = e.target.closest('#catPills .cat-pill');
+    if (!pill) return;
+    $$('#catPills .cat-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    selectedCat = pill.dataset.cat;
   });
      
   $('#qSubmit').addEventListener('click', () => {
@@ -7102,14 +7121,14 @@ _start:
     arenaLangSel.value = 'python';
   }
 
-  /* --- Run button --- */
+/* --- Run button --- */
   (function attachRunButton(){
     if (!document.getElementById('arenaStep3')) return;
     const bar = document.createElement('div');
     bar.className = 'arena-actions';
     bar.innerHTML = `
       <span class="arena-hint">Runs remotely on Judge0 CE · HTML/React rendered live in-browser</span>
-      <button class="btn btn-primary btn-lg" id="arenaRun" type="button">▶ Run &amp; Score</button>`;
+      <button class="btn btn-primary btn-lg" id="arenaRun" type="button" onclick="arenaRun()">▶ Run & Score</button>`;
     document.getElementById('arenaStep3').appendChild(bar);
     arenaRunBtn = document.getElementById('arenaRun');
 })();
@@ -9430,30 +9449,31 @@ if (teamSearch) teamSearch.addEventListener('input', () => { adminTeamPage = 1; 
 if (teamFilterStatus) teamFilterStatus.addEventListener('change', () => { adminTeamPage = 1; renderAdminTeams(); });
 if (teamRefresh) teamRefresh.addEventListener('click', () => { adminTeamSelection.clear(); loadAdminTeams(); });
 
-// Admin tab switching (Arena / Team Registrations)
-document.querySelectorAll('[data-admin-tab]').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('[data-admin-tab]').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const which = tab.dataset.adminTab;
-    const arena = document.getElementById('adminArenaSection');
-    const teams = document.getElementById('adminTeamsSection');
-    const testi = document.getElementById('adminTestimonialsSection');
-    const msgs = document.getElementById('adminMessagesSection');
-    const ann = document.getElementById('adminAnnouncementsSection');
-    const cert = document.getElementById('adminCertificatesSection');
-    const judges = document.getElementById('adminJudgesSection');
-    const sched = document.getElementById('adminScheduleSection');
-    const res = document.getElementById('adminResultsSection');
-    
-    // Hide all
-    [arena, teams, testi, msgs, ann, cert, judges, sched, res].forEach(el => {
-      if (el) el.style.display = 'none';
-    });
-    
-    // Show selected
-    if (which === 'arena' && arena) arena.style.display = 'block';
-    if (which === 'teams' && teams) teams.style.display = 'block';
+// Admin tab switching (Arena / Team Registrations) - event delegation for robustness
+document.addEventListener('click', e => {
+  const tab = e.target.closest('[data-admin-tab]');
+  if (!tab) return;
+  document.querySelectorAll('[data-admin-tab]').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const which = tab.dataset.adminTab;
+  const arena = document.getElementById('adminArenaSection');
+  const teams = document.getElementById('adminTeamsSection');
+  const testi = document.getElementById('adminTestimonialsSection');
+  const msgs = document.getElementById('adminMessagesSection');
+  const ann = document.getElementById('adminAnnouncementsSection');
+  const cert = document.getElementById('adminCertificatesSection');
+  const judges = document.getElementById('adminJudgesSection');
+  const sched = document.getElementById('adminScheduleSection');
+  const res = document.getElementById('adminResultsSection');
+  
+  // Hide all
+  [arena, teams, testi, msgs, ann, cert, judges, sched, res].forEach(el => {
+    if (el) el.style.display = 'none';
+  });
+  
+  // Show selected
+  if (which === 'arena' && arena) arena.style.display = 'block';
+  if (which === 'teams' && teams) teams.style.display = 'block';
     if (which === 'testimonials' && testi) testi.style.display = 'block';
     if (which === 'messages' && msgs) msgs.style.display = 'block';
     if (which === 'announcements' && ann) ann.style.display = 'block';
@@ -10021,6 +10041,20 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.log('SW registration failed:', err));
   });
 }
+
+// Button verification on load
+window.addEventListener('load', () => {
+  const criticalButtons = [
+    'loginBtn', 'lockLoginBtn', 'lockSignupBtn', 'arenaLoginBtn', 'arenaSignupBtn',
+    'pgRun', 'pgReset', 'pgCopy', 'nextBtn', 'prevBtn', 'addMember',
+    'qSubmit', 'fbSubmit', 'addTc', 'arenaClear', 'arenaRun'
+  ];
+  console.log('=== Button Verification ===');
+  criticalButtons.forEach(id => {
+    const el = document.getElementById(id);
+    console.log(`${id}: ${el ? 'FOUND ✓' : 'MISSING ✗'}`);
+  });
+});
 
 })();
 </script>
