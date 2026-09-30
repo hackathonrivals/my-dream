@@ -3842,6 +3842,59 @@
     setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, 3200);
   }
   window.showToast = showToast;
+  window.submitAuth = submitAuth;
+  window.updateFormFields = updateFormFields;
+  window.openLogin = openLogin;
+  window.closeLogin = closeLogin;
+  window.addMember = addMember;
+  window.setStep = (n) => { currentStep = n; setStep(currentStep); };
+  window.renderTC = renderTC;
+  window.arenaRun = arenaRun;
+  window.sendAI = sendAI;
+  window.getAIResponse = getAIResponse;
+  window.loadLang = loadLang;
+  window.runCode = runCode;
+  window.attachRunButton = attachRunButton;
+  window.computeScore = computeScore;
+  window.scoreCls = scoreCls;
+  window.escapeHtml = esc;
+  window.toggleTheme = () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.getElementById('themeToggle').textContent = next === 'dark' ? '🌙' : '☀️';
+    localStorage.setItem('hr-theme', next);
+    showToast(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info', '🌓');
+  };
+
+  // Expose functions for inline onclick handlers
+  window.HR = {
+    showToast,
+    submitAuth,
+    updateFormFields,
+    openLogin,
+    closeLogin,
+    addMember,
+    setStep: (n) => { currentStep = n; setStep(currentStep); },
+    renderTC,
+    arenaRun,
+    sendAI,
+    getAIResponse,
+    loadLang,
+    runCode,
+    attachRunButton,
+    computeScore,
+    scoreCls,
+    escapeHtml: esc,
+    toggleTheme: () => {
+      const cur = document.documentElement.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      document.getElementById('themeToggle').textContent = next === 'dark' ? '🌙' : '☀️';
+      localStorage.setItem('hr-theme', next);
+      showToast(next === 'dark' ? 'Dark mode on' : 'Light mode on', 'info', '🌓');
+    }
+  };
 
   /* ============ HEADER + MOBILE ============ */
   const header = $('#header');
