@@ -7179,7 +7179,7 @@ _start:
   }
 
 /* --- Run button --- */
-  (function attachRunButton(){
+  function attachRunButton(){
     if (!document.getElementById('arenaStep3')) return;
     const bar = document.createElement('div');
     bar.className = 'arena-actions';
@@ -7188,7 +7188,8 @@ _start:
       <button class="btn btn-primary btn-lg" id="arenaRun" type="button" onclick="arenaRun()">▶ Run & Score</button>`;
     document.getElementById('arenaStep3').appendChild(bar);
     arenaRunBtn = document.getElementById('arenaRun');
-})();
+  }
+  attachRunButton();
   // ============ API MOCK LAYER (for static hosting) ============
   // Intercepts /api/* calls and routes to Supabase directly
   (function initApiMock() {
