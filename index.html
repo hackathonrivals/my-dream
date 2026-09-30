@@ -4521,8 +4521,12 @@ async function updateMsgStatus(newStatus){
   if (newStatus === 'read') upd.read_at = new Date().toISOString();
   if (newStatus === 'replied') upd.replied_at = new Date().toISOString();
 
-  const { error } = await supabase.from('contact_messages').update(upd).eq('id', id);
-  if (error){ showToast('Update failed: ' + error.message, 'warn', '⚠️'); return; }
+  try {
+    const { error } = await supabase.from('contact_messages').update(upd).eq('id', id);
+    if (error){ showToast('Update failed: ' + error.message, 'warn', '⚠️'); return; }
+  } catch (err) {
+    showToast('Update failed: ' + err.message, 'warn', '⚠️'); return;
+  }
 
   const local = msgState.rows.find(m => m.id === id);
   if (local) Object.assign(local, upd);
@@ -4859,13 +4863,18 @@ async function getAIResponse(msg){
   aiSuggestions.style.display = 'none';
   showTyping();
 
-  const reply = await getAIResponse(msg);
-  hideTyping();
-  addAIMessage(reply);
+  try {
+    const reply = await getAIResponse(msg);
+    hideTyping();
+    addAIMessage(reply);
 
-  aiHistory.push({ role: 'user', text: msg });
-  aiHistory.push({ role: 'assistant', text: reply });
-  if (aiHistory.length > 12) aiHistory = aiHistory.slice(-12);
+    aiHistory.push({ role: 'user', text: msg });
+    aiHistory.push({ role: 'assistant', text: reply });
+    if (aiHistory.length > 12) aiHistory = aiHistory.slice(-12);
+  } catch (err) {
+    hideTyping();
+    addAIMessage('Error: ' + err.message);
+  }
 }
   aiSend.addEventListener('click', sendAI);
   aiInput.addEventListener('keydown', e => {
@@ -4936,7 +4945,8 @@ async function getAIResponse(msg){
 }
 
   async function updateAuthUI(){
-    const user = await getCurrentUser();
+    try {
+      const user = await getCurrentUser();
     const navCta = document.querySelector('.nav-cta');
     const loginBtnEl = document.getElementById('loginBtn');
     const regLock = document.getElementById('regLock');
@@ -5035,7 +5045,11 @@ async function getAIResponse(msg){
       if (arenaLock) arenaLock.style.display = '';
       if (arenaApp) arenaApp.style.display = 'none';
     }
+  } catch (err) {
+    console.error('updateAuthUI error:', err);
+    showToast('Auth check failed', 'warn', '⚠️');
   }
+}
 
   function openLogin(){
     console.log('openLogin called');
@@ -8215,10 +8229,15 @@ _start:
   }
 
 async function loadAdminData(){
-  await fetchAdminPage(true);
-  startRealtime();
-  startImportLogRealtime();
-  renderImportLog();
+  try {
+    await fetchAdminPage(true);
+    startRealtime();
+    startImportLogRealtime();
+    renderImportLog();
+  } catch (err) {
+    console.error('loadAdminData error:', err);
+    showToast('Failed to load admin data', 'warn', '⚠️');
+  }
 }
 
   if (adminSentinel && 'IntersectionObserver' in window){
@@ -8991,11 +9010,17 @@ async function loadAdminData(){
     umSub.textContent = 'Loading…';
     userModal.classList.add('open');
     document.body.style.overflow = 'hidden';
-    await fetchUserPage(true);
-    const first = umState.allRows[umState.allRows.length - 1];
-    umSub.textContent = first
-      ? `${first.full_name || email} · ${first.role || 'Student'} · since ${new Date(first.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}`
-      : 'No submissions yet';
+    try {
+      await fetchUserPage(true);
+      const first = umState.allRows[umState.allRows.length - 1];
+      umSub.textContent = first
+        ? `${first.full_name || email} · ${first.role || 'Student'} · since ${new Date(first.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })}`
+        : 'No submissions yet';
+    } catch (err) {
+      console.error('openUserHistory error:', err);
+      umSub.textContent = 'Failed to load user history';
+      showToast('Failed to load user history', 'warn', '⚠️');
+    }
   }
   if (umClose) umClose.addEventListener('click', () => {
     userModal.classList.remove('open'); document.body.style.overflow = '';
